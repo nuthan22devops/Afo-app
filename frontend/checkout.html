@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Checkout</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<h2>🧾 Checkout</h2>
+
+<h3>🛒 Your Cart</h3>
+<div id="cartItems"></div>
+<p id="totalPrice"></p>
+
+<form id="form">
+  <input id="name" placeholder="Name" required><br><br>
+  <input id="address" placeholder="Address" required><br><br>
+  <input id="mobile" placeholder="Mobile Number" required><br><br>
+
+  <button type="submit">Place Order</button>
+</form>
+
+<script>
+// ✅ Show cart items
+const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+const cartDiv = document.getElementById("cartItems");
+const totalDiv = document.getElementById("totalPrice");
+
+let total = 0;
+
+cart.forEach(item => {
+  const div = document.createElement("div");
+  div.innerHTML = `${item.name} (${item.size}) - ₹${item.price}`;
+  cartDiv.appendChild(div);
+
+  total += item.price;
+});
+
+totalDiv.innerHTML = "<b>Total: ₹" + total + "</b>";
+
+
+// ✅ Handle order submit + WhatsApp
+document.getElementById("form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const name = document.getElementById("name").value;
+  const address = document.getElementById("address").value;
+  const mobile = document.getElementById("mobile").value;
+
+  let message = "🛒 New Order:%0A";
+
+  cart.forEach(item => {
+    message += `${item.name} (${item.size}) - ₹${item.price}%0A`;
+  });
+
+  message += `%0ATotal: ₹${total}%0A`;
+  message += `%0AName: ${name}%0AAddress: ${address}%0AMobile: ${mobile}`;
+
+  // 👉 CHANGE THIS NUMBER
+  const phone = "917842783460";
+
+  window.open(`https://wa.me/${phone}?text=${message}`, "_blank");
+
+  // Save order in backend
+  await fetch("/api/order", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ name, address, mobile, cart })
+  });
+
+  localStorage.removeItem("cart");
+
+  // Redirect to success page
+  window.location.href = "success.html";
+});
+</script>
+
+</body>
+</html>
