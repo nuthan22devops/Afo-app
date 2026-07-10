@@ -34,7 +34,7 @@ jobs:
         run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "nuthan22" --password-stdin
 
       - name: Build Docker Image
-        run: docker build -t nuthan22/my-app:${{ github.sha }} .
+        run: docker build -t nuthan22/my-app:${{ github.sha }} ../
 
       - name: Push Docker Image
         run: docker push nuthan22/my-app:${{ github.sha }}
