@@ -21,5 +21,5 @@ jobs:
               run: npm install
               
             - name: Build Docker Image
-              run: docker build -t ${{ nuthan22}}/my-app:${{ github.sha }} .
+              run: docker build -t  nuthan22/my-app:${{ github.sha }} .
 
