@@ -1,0 +1,28 @@
+piVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: afo-backend
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: afo-backend
+
+  template:
+    metadata:
+      labels:
+        app: afo-backend
+
+    spec:
+      containers:
+      - name: afo-backend
+
+        image: nuthan22/my-app:3f4a700e5396e9fb88cc426d324a4a974effa52b3
+
+        imagePullPolicy: Always
+
+        ports:
+        - containerPort: 3000
