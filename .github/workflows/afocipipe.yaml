@@ -1,45 +1,40 @@
-name: Afo-Cipipe
-#ignore
+name: Afo-CI-Pipeline
 
-on: 
-    push:
-        branches: 
-            - main
-env:
-  DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-     
-    
-    
+on:
+  push:
+    branches:
+      - main
+
 jobs:
-    build:
-        runs-on: ubuntu-latest
-        defaults:
-          run:
-            working-directory: backend
-        steps: 
-            - name: Checkout code
-              uses: actions/checkout@v4            
-            - name: Set up NodeJS
-              uses: actions/setup-node@v3
-              with: 
-                node-version: '14'
-             
+  build-and-push:
 
-            - name: Install NodeJS dependencies
-              run: npm install
-            - name: Run tests
-              run: npm test
-              
-            - name: Run Tests
-              run: npm test
-jobs:
-    build:
-        runs-on: ubuntu-latest
-        steps:  
-            - name: Build Docker Image
-              run: docker build -t  nuthan22/my-app:${{ github.sha }} .
-            - name: Log in to DockerHub
-              run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "nuthan22" --password-stdin
+    runs-on: ubuntu-latest
 
-            - name: Push Docker image to DockerHub
-              run: docker push nuthan22/my-app:${{ github.sha }}
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run Tests
+         run: npm test
+
+      - name: Login to Docker Hub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "nuthan22" --password-stdin
+
+      - name: Build Docker Image
+        run: docker build -t nuthan22/my-app:${{ github.sha }} .
+
+      - name: Push Docker Image
+        run: docker push nuthan22/my-app:${{ github.sha }}
