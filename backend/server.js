@@ -13,15 +13,15 @@ app.use(express.json());
 // API Routes
 app.use("/api", orderRoutes);
 
-// Serve frontend
-app.use(express.static(path.join(__dirname, "../frontend")));
+// Serve frontend files
+app.use(express.static(path.join(__dirname, "frontend")));
 
 // Serve backend images
 app.use("/images", express.static(path.join(__dirname, "images")));
 
 // Home page
 app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "../frontend", "index.html"));
+    res.sendFile(path.join(__dirname, "frontend", "index.html"));
 });
 
 // Start server
