@@ -25,6 +25,9 @@ jobs:
             - name: Install NodeJS dependencies
               run: npm install
               
+            - name: Run Tests
+              run: npm test
+              
             - name: Build Docker Image
               run: docker build -t  nuthan22/my-app:${{ github.sha }} .
             - name: Log in to DockerHub
