@@ -5,7 +5,7 @@ metadata:
   name: afo-backend
 
 spec:
-  replicas: 2
+  replicas: 5
 
   selector:
     matchLabels:
