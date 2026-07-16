@@ -45,10 +45,7 @@ jobs:
         run: |
           sed -i "s|image: .*|image: nuthan22/my-app:${{ github.sha }}|g" ../k8s/deployment.yaml
 
-      - name: Configure Git
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
+    
 
       - name: Commit Manifest
         run: |
