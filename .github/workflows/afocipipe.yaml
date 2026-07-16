@@ -41,7 +41,7 @@ jobs:
 
       - name: Update Deployment Image
         run: |
-          sed -i "s|image: .*|image: nuthan22/my-app:${{ github.sha }}|g" k8s/deployment.yaml
+          sed -i "s|image: .*|image: nuthan22/my-app:${{ github.sha }}|g" k8's/deployment.yaml
 
       - name: Configure Git
         run: |
@@ -50,7 +50,7 @@ jobs:
 
       - name: Commit Manifest
         run: |
-           git add k8s/deployment.yaml
+           git add k8's/deployment.yaml
 
            if git diff --cached --quiet; then
              echo "No changes"
