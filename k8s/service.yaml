@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: afo-backend-service
+
+spec:
+  selector:
+    app: afo-backend
+
+  ports:
+  - port: 80
+    targetPort: 3000
+
+  type: NodePort
