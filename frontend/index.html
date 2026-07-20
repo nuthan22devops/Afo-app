@@ -1,23 +1,106 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>AFO - Sivakesava Oils traders </title>
-  <link rel="stylesheet" href="css/style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>One Piece Store</title>
+
+<link rel="stylesheet" href="css/style.css">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+    background:url("images/onepiece-bg.jpg") center center/cover no-repeat;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.overlay{
+    width:100%;
+    height:100vh;
+    background:rgba(0,0,0,.65);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.container{
+    text-align:center;
+    color:white;
+    max-width:800px;
+    padding:40px;
+}
+
+h1{
+    font-size:60px;
+    color:#FFD700;
+    margin-bottom:20px;
+}
+
+h2{
+    color:#ffffff;
+    margin-bottom:20px;
+}
+
+p{
+    font-size:22px;
+    line-height:1.8;
+    margin-bottom:40px;
+}
+
+button{
+    padding:16px 45px;
+    font-size:22px;
+    border:none;
+    border-radius:50px;
+    background:#e63946;
+    color:white;
+    cursor:pointer;
+    transition:.3s;
+}
+
+button:hover{
+    background:#ffb703;
+    color:black;
+    transform:scale(1.05);
+}
+</style>
+
 </head>
+
 <body>
 
-<h1>🌿 One peice japanese anime</h1>
+<div class="overlay">
+
+<div class="container">
+
+<h1>🏴‍☠️ ONE PIECE</h1>
+
+<h2>Welcome to the Grand Line!</h2>
 
 <p>
- oreva monkey d luffy kizoku ori naruho tokuda
-Choose AFO for healthy living!
+Join Monkey D. Luffy and the Straw Hat Pirates on an epic adventure across the seas.
+Explore legendary characters, powerful Devil Fruits, bounty posters, and exclusive One Piece merchandise.
 </p>
 
 <button onclick="goToShop()">Quick Shop</button>
 
+</div>
+
+</div>
+
 <script>
 function goToShop() {
-  window.location.href = "shop.html";
+    window.location.href = "shop.html";
 }
 </script>
 
