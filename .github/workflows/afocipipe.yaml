@@ -45,14 +45,14 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # Build and Push ARM64 Docker Image
+      # Build and Push Amd64 Docker Image
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v6
         with:
           context: .
           file: ./Dockerfile
           push: true
-          platforms: linux/arm64
+          platforms: linux/amd64
           tags: |
             nuthan22/my-app:${{ github.sha }}
             nuthan22/my-app:latest
