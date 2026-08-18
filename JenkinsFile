@@ -1,0 +1,172 @@
+pipeline {
+    agent {
+        docker {
+            image 'node:20-alpine'
+            args '-v /var/run/docker.sock:/var/run/docker.sock'
+        }
+    }
+
+    environment {
+        DOCKER_IMAGE = 'nuthan22/my-app'
+        DOCKER_CREDENTIALS = 'dockerhub-credentials'
+        SONARQUBE_SERVER = 'MySonarQube'
+        K8S_DEPLOYMENT = 'k8s/deployment.yaml'
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                dir('backend') {
+                    sh '''
+                        echo "Installing dependencies..."
+                        npm install
+                    '''
+                }
+            }
+        }
+
+        stage('Build Application') {
+            steps {
+                dir('backend') {
+                    sh '''
+                        echo "Building application..."
+                        npm run build
+                    '''
+                }
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                dir('backend') {
+                    sh '''
+                        echo "Running tests..."
+                        npm test
+                    '''
+                }
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                dir('backend') {
+                    withSonarQubeEnv("${SONARQUBE_SERVER}") {
+                        sh '''
+                            echo "Running SonarQube analysis..."
+
+                            npx sonar-scanner \
+                                -Dsonar.projectKey=afo-app \
+                                -Dsonar.projectName=afo-app \
+                                -Dsonar.sources=.
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                sh '''
+                    echo "Building Docker image..."
+
+                    docker build \
+                        -t ${DOCKER_IMAGE}:${BUILD_NUMBER} \
+                        -t ${DOCKER_IMAGE}:latest \
+                        .
+                '''
+            }
+        }
+
+        stage('Docker Login') {
+            steps {
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: "${DOCKER_CREDENTIALS}",
+                        usernameVariable: 'DOCKER_USERNAME',
+                        passwordVariable: 'DOCKER_PASSWORD'
+                    )
+                ]) {
+                    sh '''
+                        echo "Logging into Docker Hub..."
+
+                        echo "$DOCKER_PASSWORD" | docker login \
+                            --username "$DOCKER_USERNAME" \
+                            --password-stdin
+                    '''
+                }
+            }
+        }
+
+        stage('Docker Push') {
+            steps {
+                sh '''
+                    echo "Pushing Docker image..."
+
+                    docker push ${DOCKER_IMAGE}:${BUILD_NUMBER}
+                    docker push ${DOCKER_IMAGE}:latest
+                '''
+            }
+        }
+
+        stage('Update Kubernetes Image') {
+            steps {
+                sh '''
+                    echo "Updating Kubernetes deployment image..."
+
+                    sed -i \
+                        "s|image: .*|image: ${DOCKER_IMAGE}:${BUILD_NUMBER}|g" \
+                        ${K8S_DEPLOYMENT}
+
+                    echo "Updated Kubernetes deployment:"
+                    cat ${K8S_DEPLOYMENT}
+                '''
+            }
+        }
+
+        stage('Commit Kubernetes Manifest') {
+            steps {
+                sh '''
+                    echo "Configuring Git..."
+
+                    git config user.name "nuthan22devops"
+                    git config user.email "nuthandevops22@gmail.com"
+
+                    echo "Adding Kubernetes manifest..."
+                    git add ${K8S_DEPLOYMENT}
+
+                    if git diff --cached --quiet; then
+                        echo "No changes to commit."
+                    else
+                        git commit -m "Update image to ${DOCKER_IMAGE}:${BUILD_NUMBER}"
+
+                        echo "Pushing Kubernetes manifest changes..."
+                        git push origin HEAD:${GIT_BRANCH}
+                    fi
+                '''
+            }
+        }
+    }
+
+    post {
+
+        success {
+            echo '========================================'
+            echo 'Pipeline completed successfully!'
+            echo '========================================'
+        }
+
+        failure {
+            echo '========================================'
+            echo 'Pipeline failed!'
+            echo 'Check the Jenkins console output.'
+            echo '========================================'
+        }
+    }
+}
