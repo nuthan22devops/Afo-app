@@ -20,7 +20,7 @@ spec:
       containers:
       - name: afo-backend
 
-        image: nuthan22/my-app:d964e8e76b43d44dac410b2ee5a42f768d24a4b5
+        image: nuthan22/my-app:38f68ba41f7caaff32399b4fdb737deab9913f92
 
         imagePullPolicy: Always
 
