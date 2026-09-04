@@ -1,66 +1,98 @@
-This was a E-Commere application using node js 
-the application has been built through Chatgpt with dependencies and required frontend and backend 
-and i have created the Dockerfile and Kubernetes manifest file using official documentation respectively
-using git hub actions for Continous integration CI part
-and Azure Kubernetes cluster for Continuos deployment using Argocd 
-through GITHUB Actions CI we have triggred pipeline which will checkout the git repository for source code, and with installing dependencies using npm install , and building and testing the applications through pipeline steps
+AFO-App – CI/CD with GitHub Actions, Docker, Kubernetes & Argo CD
+
+This was an E-Commerce application using Node.js. I created the required Dockerfile and Kubernetes manifest files using the official documentation and implemented Continuous Integration using GitHub Actions and Continuous Deployment using GitOps with Argo CD on Azure Kubernetes Service (AKS).
+
+Continuous Integration
+
+For the Continuous Integration part, I used GitHub Actions to create a pipeline that checks out the Git repository, installs the required dependencies using npm install, and builds and tests the application through the pipeline steps.
 <img width="1322" height="628" alt="image" src="https://github.com/user-attachments/assets/499bc260-2d65-47a7-b354-fa6891637ece" />
+After building and testing the application, the pipeline builds the Docker image using docker build.
 
-Building the docker image with docker build commands and stored my docker login credentials in github secrets
-then in next step login to docker with declared varialbles and then pushed the builded image into the docker hub with latest image tag
-and written a shell script commands to update the kuberentes deployment file with latest image through git commands, which has been build through ci process
-now the image has been updated successfully in deployment.yaml and the Continous integration has been succesfully done 
+I stored my Docker Hub login credentials in GitHub Secrets and used them in the next step to login to Docker Hub securely.
+
+The built Docker image is then pushed to Docker Hub using the latest image tag.
+
+I also used shell commands in the pipeline to update the Kubernetes deployment file with the latest Docker image.
 <img width="1325" height="516" alt="image" src="https://github.com/user-attachments/assets/6fbb8982-84c7-4bbe-a9af-90c0ae34e5ec" />
+After the pipeline completes successfully, the latest image is updated in the deployment.yaml file and the Continuous Integration part is completed.
+Continuous Deployment
 
-CD part
-create customized Azure kubernetes cluster with nodepool constisting of only 2 nodes with standard Virtual machine.
+For the Continuous Deployment part, I created a customized Azure Kubernetes Service (AKS) cluster with a node pool consisting of two standard virtual machine nodes.
 <img width="1350" height="643" alt="image" src="https://github.com/user-attachments/assets/4bf6c63b-7c85-47f2-8d02-700dbddfcfd2" />
-login to my AKS cluster cluster credentials using azure cli, and installed kubectl to access the cluster environment
-created a ArgoCD namespace and installed Argocd 
+I logged into the AKS cluster using Azure CLI and installed/configured kubectl to access the Kubernetes environment.
+
+I then created an Argo CD namespace and installed Argo CD in the Kubernetes cluster.
 <img width="1126" height="551" alt="image" src="https://github.com/user-attachments/assets/f58fd2ec-cf2c-4ed9-b196-a3edf9c6c0b9" />
 
-patched  the argocd service port to LoadBalancer to expose the argocd through internet
-and taken the argocd service loadbalancer address accessed the application through browser UI with 
-we have used this command to retrive the encrypted password secret of argocd 
+I patched the Argo CD service to LoadBalancer so that I could access the Argo CD UI through a browser.
+
+To retrieve the initial Argo CD administrator password, I used:
+
 kubectl -n argocd get secret argocd-initial-admin-secret \
   -o jsonpath="{.data.password}" | base64 -d
-echo 
-with the password we can login to argocd 
-ARGOCD username admin
-password: xxxxxxxxxxxxxxxxxxxxxx
+
+The retrieved password can then be used to login to Argo CD.
 <img width="1335" height="687" alt="image" src="https://github.com/user-attachments/assets/e8228301-5dbf-4a11-9886-ba0ac0e2fd5c" />
 
-In Argocd go to settings go to the repositories added via http  and provided git repo url and click on connect
-Note:my account has been public there was no need of credentials
+Connect Git Repository
+
+In Argo CD, I went to Settings → Repositories, added my Git repository URL and connected the repository.
+
+Since my repository is public, credentials were not required.
 <img width="1135" height="643" alt="image" src="https://github.com/user-attachments/assets/0200182a-b040-4f3b-8bf8-bb35078717a5" /> 
 
 
 <img width="1331" height="625" alt="image" src="https://github.com/user-attachments/assets/22984d2f-8225-4333-b2b3-43872f13bb32" /
-Now go to Argocd application click on new application then provide application name, projectname, sync policy i have kept as automatic then repo url will be automaticaly visible as we have added in previous step you can select that or you can add your target repo url to deploy the application through argocd.
-then give the namespace where your application needed to be deployed. 
-add path of the kubernertes manifest files which needs to deploy the application
+Create Argo CD Application
+
+In Argo CD, I created a new application and configured:
+
+Application name
+Project name
+Sync policy
+Git repository URL
+Target namespace
+Kubernetes manifest path
+
+I configured the sync policy as Automatic so that Argo CD can detect changes in the Git repository and synchronize them with the AKS cluster.
 <img width="1331" height="625" alt="image" src="https://github.com/user-attachments/assets/299ea74b-bd85-4355-8343-52a87e509f83" />
- Now argocd will deploy the application in your Aks cluster
+ Argo CD then deploys the application into the AKS cluster.
  <img width="1327" height="662" alt="image" src="https://github.com/user-attachments/assets/614658d5-d695-435c-bd52-2ca319a25684" />
-Now go to your kubernetes cluster and check whetehr the pods and service are running or not 
+Verify Kubernetes Deployment
+
+After the Argo CD deployment, I checked the Kubernetes cluster to verify that the application pods and services were running.
 <img width="870" height="326" alt="image" src="https://github.com/user-attachments/assets/8760a438-64fb-4103-966e-9d33d1d63956" />
-i have changed the application service to Loadbalancer to expose the application throughout internet
-using Loadbalancer address we can access the application
+I changed the application service to LoadBalancer to expose the application externally.
+
+Using the LoadBalancer address, I was able to access the application through a browser.
 <img width="1317" height="703" alt="image" src="https://github.com/user-attachments/assets/3e0acc96-d105-48fc-b459-8066d09e351e" />
 
 Now we can access the application succesfully.
 
-now we can deploy the changes to the application using the automation when the change in the source code will trigger the pipeline for the Continous integration then the latest version image will be updated in the k8s file 
-and argocd works on the git as a single source of truth it will watch the git rep path which we have provided and sync according to the changes it  automatically rollout in the updtaed deployment in kubernetes cluster
-for Example i will be changing the name of my index page from  siva kesava oil traders to Amma food oils from github then the the pipeline and deployment will be auto triggered
+CI/CD Automation Test
+
+I also tested the complete CI/CD process by making a small change to the application source code.
+
+For example, I changed the name on the index page from:
+
+Siva Kesava Oil Traders
+
+to:
+
+Amma Food Oils
 <img width="522" height="382" alt="image" src="https://github.com/user-attachments/assets/8d9a34d1-06a0-4b19-a62a-bb9db1af81f0" />
-Update header title from 'sivakesava oil Traders' to 'Amma Food oils' and commiting the change to main branch
+commiting the change to main branch
 <img width="477" height="502" alt="image" src="https://github.com/user-attachments/assets/83f7e43c-657f-4666-9c69-dc015f1a9691" />
-now the pipeline will auto triggred and argocd will deploy the changes to kubernetes cluster
-the old pods are being terminated and the new pods are being deployed with latest image are running.
+The source-code change triggered the Continuous Integration pipeline.
+
+The pipeline built the new Docker image, pushed it to Docker Hub and updated the Kubernetes deployment manifest with the latest image.
+
+Argo CD then detected the updated Kubernetes manifest from Git and synchronized the changes to the AKS cluster.
+
+The old pods were terminated and the new pods were deployed with the latest image
 <img width="773" height="361" alt="image" src="https://github.com/user-attachments/assets/bfa80bfc-7167-4441-aea6-b4ebe88e1a95" />
 
-now when we access the application we can clearly see the latest changes 
+After accessing the application, I could see the latest application changes.
 <img width="1326" height="376" alt="image" src="https://github.com/user-attachments/assets/b0890028-2a5e-45b1-b439-100d67a5d7ba" />
 
 Developer
@@ -104,13 +136,16 @@ AKS
         ▼
    E-Commerce Application
 
-This Project helps me practical experience how to perform CICD through GITHUB pipeline and GITOPS Deployment through Argocd in kubernetes cluster.
-where in Continous Integration part i have been build pipeline for checkout SRC. building, testing application , and pushing the docker image to dockerhub and updating the latest image in the kubernetes manifest file
+   
+Project Summary
 
-In Continous Deployment part we have set up Argocd in kubernetes cluster and added the repo of the updated kubernetes manifest to watch and sync automatically , and deployed those changes in cluster
+This project gave me practical experience in implementing Continuous Integration using GitHub Actions and Continuous Deployment using GitOps with Argo CD on a Kubernetes cluster.
 
-I have also tested complete automation of the CICD by making the small change to github code and commited it triggered the entire CICD proceess and we can see the newest version of image deployed.
+For the Continuous Integration part, I built a GitHub Actions pipeline to checkout the source code, install dependencies, build and test the application, build the Docker image, push the image to Docker Hub, and update the latest image in the Kubernetes manifest file.
 
+For the Continuous Deployment part, I set up an Azure Kubernetes Service (AKS) cluster and installed Argo CD. I added the Git repository containing the Kubernetes manifests and configured Argo CD to watch and synchronize the repository automatically.
+
+I also tested the complete CI/CD process by making a small change to the application and committing it to the main branch. The change triggered the CI process, updated the Docker image and Kubernetes manifest, and Argo CD synchronized the updated deployment to the AKS cluster. I verified the result by accessing the application and confirming that the latest changes were deployed.
 
 
 
